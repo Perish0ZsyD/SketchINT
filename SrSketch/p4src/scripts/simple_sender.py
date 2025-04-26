@@ -12,6 +12,13 @@ from p4utils.utils.topology import Topology
 
 
 
+class SourceRoute(Packet):
+    field_desc = [ BitField("bos", 0, 1),
+                   BitField("port", 0, 15)]
+    
+
+
+
 class MIH(Packet):
     name="MIH"
     #bitfiled(<name>,<default>,<length>)
@@ -30,7 +37,7 @@ class flag(Packet):
 #always via eth0
 def get_if():
     ifs=get_if_list()
-    iface=None # "h1-eth0"
+    iface=None  # "h1-eth0"
     for i in get_if_list():
         if "eth0" in i:
             iface=i
@@ -50,46 +57,19 @@ def get_dst_mac(ip):
     except:
         return None
 
+def SwitchConfig(Packet):
 
-def send_packet(interface,args,program):
     
-    # a l2 implementation
-    #dstAddr = socket.gethostbyname(args.d)
-    #print(socket.getaddrinfo(sys.argv[1], None, 0, socket.SOCK_STREAM))
-    #ether_dst = get_dst_mac(dstAddr)
-    #if not ether_dst:
-    #    print "Mac address for %s was not found in the ARP table" % dstAddr
-    #    exit(1)
-    #pkt= Ether(src=get_if_hwaddr(interface),dst=ether_dst)
-    #pkt=pkt/IP(dst=dstAddr)
-    
-
-    #warning!
-    #if want to send TCP ,must change the parser of p4
-    
-    if program=="f":
-        topo = Topology(db="../p4src_flowsize/topology.db")  #set the topology
-    elif program=="i":
-        topo = Topology(db="../p4src_interval/topology.db")  #set the topology
-    dstAddr=topo.get_host_ip(args.d)
-    pkt=IP(dst=dstAddr)
-    if args.type=="tcp" :
-        pkt=pkt/TCP()
-    elif args.type=="udp":
-        pkt=pkt/UDP()
-        pkt=pkt/flag()/"load0load1load2load3"
-    else:
-        pkt=pkt/ICMP()
-    while True:
-        raw_input("Testing! Press the return key to send a packet using "+args.type.lower())
-        print ("Sending on interface %s \n"%(interface))
-        #sendp(pkt, iface=iface, verbose=False)
-        for i in range(args.number):
-            send(pkt)
 
 
 
 def main():
+    
+    if len(sys.argv) < 3:
+        print("pass 2 arguments: <dst host ip address> <number of packets>")
+        exit(1)
+
+    
     parser=argparse.ArgumentParser()
     parser.add_argument("d",help="the dst host name")
     parser.add_argument("p",help="the program to be run",choices=["f","i"])

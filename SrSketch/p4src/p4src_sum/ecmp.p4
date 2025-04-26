@@ -289,7 +289,7 @@ control MyIngress(inout headers hdr,
 		default_action=NoAction;
 	}
 
-action drop(){
+	action drop(){
 		mark_to_drop(standard_metadata);
 	}
 
@@ -343,9 +343,9 @@ action drop(){
 			hdr.ipv4.dstAddr : lpm;
 		}
 		actions = {
-		   set_nhop;
-		ecmp_group;
-		drop;
+		   	set_nhop;
+			ecmp_group;
+			drop;
 		}
 		size = 1024;
 		default_action = drop;
